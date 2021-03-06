@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using CTMTechTest.Data;
 
 namespace CTMTechTest
 {
@@ -22,6 +24,15 @@ namespace CTMTechTest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            //services.AddDbContext<TransactionContext>(options =>
+            //        options.UseSqlServer(Configuration.GetConnectionString("TransactionContext")));
+
+            //services.AddDbContext<MerchantContext>(options =>
+            //        options.UseSqlServer(Configuration.GetConnectionString("MerchantContext")));
+
+            services.AddDbContext<DataContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("DataContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
