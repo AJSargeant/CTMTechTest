@@ -13,6 +13,8 @@ namespace CTMTechTest.Data
         {
         }
 
+        public DataContext() { }
+
         public DbSet<Models.Transaction> Transaction { get; set; }
         public DbSet<Models.Merchant> Merchant { get; set; }
         public DbSet<Models.User> User { get; set; }

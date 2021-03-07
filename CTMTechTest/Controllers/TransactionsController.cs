@@ -22,48 +22,8 @@ namespace CTMTechTest.Controllers
         // GET: Transactions
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Transaction.ToListAsync());
-        }
-
-        // GET: Transactions/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var transaction = await _context.Transaction
-                .SingleOrDefaultAsync(m => m.ID == id);
-            if (transaction == null)
-            {
-                return NotFound();
-            }
-
-            return View(transaction);
-        }
-
-        // GET: Transactions/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Transactions/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Description")] Transaction transaction)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(transaction);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(transaction);
-        }
+            return View(await _context.Transaction.Include(t => t.Merchant).ToListAsync());
+        } 
 
         private bool TransactionExists(int id)
         {

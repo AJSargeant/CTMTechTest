@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CTMTechTest.Models;
 using System.Text;
@@ -30,28 +27,7 @@ namespace CTMTechTest.APIControllers
             {
                 foreach (Transaction trans in item)
                 {
-                    Merchant[] possibleMerchants = _context.Merchant.Where(x => trans.Description.Replace("'","").ToUpper().Contains(x.Name.ToUpper())).ToArray<Merchant>();
-                    if (possibleMerchants.Length > 0)
-                    {
-                        possibleMerchants = possibleMerchants.Where(x => possibleMerchants.Where(y => y.Name.Contains(x.Name)).Count() == 1).ToArray();
-                        Merchant merchant = null;
-                        StringBuilder builder = new StringBuilder();
-                        for(int i = 0; i < trans.Description.Length; i++)
-                        {
-                            builder.Append(trans.Description[i]);
-                            merchant = possibleMerchants.FirstOrDefault(x => builder.ToString().ToUpper().Contains(x.Name.ToUpper()));
-                            if (merchant != null)
-                                break;
-                        }
-
-                        trans.Merchant = merchant;
-                    }
-                    else
-                    {
-                        Merchant newMerchant = new Merchant { Name = "Unknown" };
-                        _context.Merchant.Add(newMerchant);
-                        trans.Merchant = newMerchant;
-                    }
+                    AddMerchant(trans);
                     _context.Transaction.Add(trans);
                 }
                 await _context.SaveChangesAsync();
@@ -59,6 +35,35 @@ namespace CTMTechTest.APIControllers
             }
             else
                 return StatusCode(500);
+        }
+
+        public Transaction AddMerchant(Transaction t)
+        {
+            Merchant[] possibleMerchants = _context.Merchant.Where(x => t.Description.Replace("'", "").ToUpper().Contains(x.Name.ToUpper())).ToArray<Merchant>();
+            if (possibleMerchants.Length > 0)
+            {
+                possibleMerchants = possibleMerchants.Where(x => possibleMerchants.Where(y => y.Name.Contains(x.Name)).Count() == 1).ToArray();
+                Merchant merchant = null;
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < t.Description.Length; i++)
+                {
+                    if (t.Description[i] == '\'')
+                        continue;
+                    builder.Append(t.Description[i]);
+                    merchant = possibleMerchants.FirstOrDefault(x => builder.ToString().ToUpper().Contains(x.Name.ToUpper()));
+                    if (merchant != null)
+                        break;
+                }
+
+                t.Merchant = merchant;
+            }
+            else
+            {
+                Merchant newMerchant = new Merchant { Name = "Unknown" };
+                _context.Merchant.Add(newMerchant);
+                t.Merchant = newMerchant;
+            }
+            return t;
         }
     }
 }
